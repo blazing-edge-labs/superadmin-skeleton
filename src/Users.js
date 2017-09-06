@@ -28,7 +28,7 @@ const UserFilter = (props) => (
 export const UserList = (props) => (
   <List
     {...props}
-    perPage={10}
+    perPage={5}
     sort={{field: 'id', order: 'ASC'}}
     filters={<UserFilter/>}
   >

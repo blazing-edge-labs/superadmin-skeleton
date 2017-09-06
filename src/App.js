@@ -11,7 +11,6 @@ class App extends Component {
     return (
       <Admin restClient={myApiRestClient} history={history}>
         <Resource name="user" list={UserList} edit={UserEdit} create={UserCreate} remove={Delete}/>
-        <Resource name="user_role" list={UserRoleList}/>
       </Admin>
     )
   }

@@ -1,5 +1,12 @@
 # Superadmin skeleton V2
 
+## Starting:
+
+- update the `API_URL` at the top of `/src/restClient.js`
+- run `npm install`
+- run `npm start`
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>
