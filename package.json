@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "dotenv-safe": "^4.0.4",
     "express": "^4.15.4",
     "history": "^4.6.3",
     "react": "^15.6.1",
