@@ -6,7 +6,6 @@ import {
   TextField,
   EmailField,
   DateField,
-  ReferenceField,
   EditButton,
   DeleteButton,
   Filter,
