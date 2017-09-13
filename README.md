@@ -2,9 +2,14 @@
 
 ## Starting:
 
-- update the `API_URL` at the top of `/src/restClient.js`
+- copy `.env.example` to `.env` and set the env variables
+    - all variables defined in `.env.example` must be set
+    - `.env` variables can be omitted if same are provided through other means (i.e. heroku)
+    - NOTE: `REACT_APP_API_URL` is basically `API_URL`, the prefix is here to expose it to React frontend
 - run `npm install`
-- run `npm start`
+- start the app:
+    - run `npm start:dev` to start the local webpack-dev-server, or
+    - run `npm build` to make the production build, then `npm start` to start the static file server
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
