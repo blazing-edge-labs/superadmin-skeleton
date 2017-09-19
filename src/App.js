@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import createHistory from 'history/createBrowserHistory'
 import { Admin, Resource, Delete } from 'admin-on-rest'
-import { UserList, UserEdit, UserCreate } from './Users'
+import { UserList, UserEdit, UserCreate } from './resources/Users'
 
-import authClient from './authClient'
-import restClient from './restClient'
+import authClient from './clients/authClient'
+import restClient from './clients/restClient'
 
 const history = createHistory()
 
