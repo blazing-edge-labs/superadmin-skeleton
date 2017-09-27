@@ -3,10 +3,10 @@ import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest'
 
 export default (type, params) => {
   if (type === AUTH_LOGIN) {
-    const {username, password} = params
+    const {email, password} = params
     const request = new Request(url.resolve(process.env.REACT_APP_API_URL, '/auth'), {
       method: 'POST',
-      body: JSON.stringify({email: username, password}),
+      body: JSON.stringify({email, password}),
       headers: new Headers({'Content-Type': 'application/json'}),
     })
     return fetch(request)
