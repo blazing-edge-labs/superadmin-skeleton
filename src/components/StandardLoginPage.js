@@ -96,7 +96,7 @@ class StandardLoginPage extends Component {
               <CardActions>
                 <RaisedButton
                   type="submit"
-                  // primary
+                  primary
                   disabled={submitting}
                   label="Sign in"
                   fullWidth
