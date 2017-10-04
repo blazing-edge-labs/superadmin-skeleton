@@ -67,7 +67,6 @@ class PasswordlessLoginPage extends Component {
 
   componentDidMount() {
     if (this.props.URLQuery) {
-      console.log('Confirming token...')
       this.confirmTokenAuth()
     }
   }

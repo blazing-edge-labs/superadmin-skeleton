@@ -6,7 +6,6 @@ export default (type, params) => {
     const { email, password, token } = params
 
     if (email && password) {
-      console.log('AUTH - (email, password)')
       const request = new Request(url.resolve(process.env.REACT_APP_API_URL, '/auth'), {
         method: 'POST',
         body: JSON.stringify({ email, password }),
@@ -23,7 +22,6 @@ export default (type, params) => {
         localStorage.setItem('token', token)
       })
     } else if (email) {
-      console.log('AUTH - (email)')
       const request = new Request(url.resolve(process.env.REACT_APP_API_URL, '/signin'), {
         method: 'POST',
         body: JSON.stringify({ email }),
@@ -37,7 +35,6 @@ export default (type, params) => {
         return Promise.reject('Email sent!')
       })
     } else if (token) {
-      console.log('AUTH - (token)')
       const request = new Request(url.resolve(process.env.REACT_APP_API_URL, '/auth/token'), {
         method: 'POST',
         body: JSON.stringify({ token }),
