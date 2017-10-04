@@ -3,29 +3,64 @@ import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest'
 
 export default (type, params) => {
   if (type === AUTH_LOGIN) {
-    const {email, password} = params
-    const request = new Request(url.resolve(process.env.REACT_APP_API_URL, '/auth'), {
-      method: 'POST',
-      body: JSON.stringify({email, password}),
-      headers: new Headers({'Content-Type': 'application/json'}),
-    })
-    return fetch(request)
-    .then(response => {
-      if (response.status < 200 || response.status >= 300) {
-        throw new Error(response.statusText)
-      }
-      return response.json()
-    })
-    .then(({data: {token}}) => {
-      localStorage.setItem('token', token)
-    })
+    const { email, password, token } = params
+
+    if (email && password) {
+      console.log('AUTH - (email, password)')
+      const request = new Request(url.resolve(process.env.REACT_APP_API_URL, '/auth'), {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+        headers: new Headers({ 'Content-Type': 'application/json' }),
+      })
+      return fetch(request)
+      .then(response => {
+        if (response.status < 200 || response.status >= 300) {
+          throw new Error(response.statusText)
+        }
+        return response.json()
+      })
+      .then(({ data: { token } }) => {
+        localStorage.setItem('token', token)
+      })
+    } else if (email) {
+      console.log('AUTH - (email)')
+      const request = new Request(url.resolve(process.env.REACT_APP_API_URL, '/signin'), {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+        headers: new Headers({ 'Content-Type': 'application/json' }),
+      })
+      return fetch(request)
+      .then(response => {
+        if (response.status < 200 || response.status >= 300) {
+          throw new Error(response.statusText)
+        }
+        return Promise.reject('Email sent!')
+      })
+    } else if (token) {
+      console.log('AUTH - (token)')
+      const request = new Request(url.resolve(process.env.REACT_APP_API_URL, '/auth/token'), {
+        method: 'POST',
+        body: JSON.stringify({ token }),
+        headers: new Headers({ 'Content-Type': 'application/json' }),
+      })
+      return fetch(request)
+      .then(response => {
+        if (response.status < 200 || response.status >= 300) {
+          throw new Error(response.statusText)
+        }
+        return response.json()
+      })
+      .then(({ data: { token } }) => {
+        localStorage.setItem('token', token)
+      })
+    }
   }
   if (type === AUTH_LOGOUT) {
     localStorage.removeItem('token')
     return Promise.resolve()
   }
   if (type === AUTH_ERROR) {
-    const {status} = params
+    const { status } = params
     if (status === 401 || status === 403) {
       localStorage.removeItem('token')
     }
