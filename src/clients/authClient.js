@@ -5,7 +5,7 @@ export default (type, params) => {
   if (type === AUTH_LOGIN) {
     const { email, password, token } = params
 
-    if (email && password) {
+    if (email && password) { // Standard login
       const request = new Request(url.resolve(process.env.REACT_APP_API_URL, '/auth'), {
         method: 'POST',
         body: JSON.stringify({ email, password }),
@@ -21,7 +21,7 @@ export default (type, params) => {
       .then(({ data: { token } }) => {
         localStorage.setItem('token', token)
       })
-    } else if (email) {
+    } else if (email) { // Passwordless request
       const request = new Request(url.resolve(process.env.REACT_APP_API_URL, '/signin'), {
         method: 'POST',
         body: JSON.stringify({ email }),
@@ -34,7 +34,7 @@ export default (type, params) => {
         }
         return Promise.reject('Email sent!')
       })
-    } else if (token) {
+    } else if (token) { // Passwordless confirm
       const request = new Request(url.resolve(process.env.REACT_APP_API_URL, '/auth/token'), {
         method: 'POST',
         body: JSON.stringify({ token }),

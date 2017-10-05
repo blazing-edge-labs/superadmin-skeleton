@@ -3,7 +3,6 @@ import createHistory from 'history/createBrowserHistory'
 import { Admin, Resource, Delete } from 'admin-on-rest'
 import { UserList, UserEdit, UserCreate } from './resources/Users'
 
-// import StandardLoginPage from './components/StandardLoginPage'
 import PasswordlessLoginPage from './components/PasswordlessLoginPage'
 
 import authClient from './clients/authClient'
