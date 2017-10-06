@@ -1,16 +1,22 @@
 import url from 'url'
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest'
 
-import { USER_ROLE_SUPERADMIN } from '../constants'
+import { USER_ROLE_SUPERADMIN, API_ERROR_CODES } from '../constants'
 
-const setTokenInLocalStorage = (token) => {
-  localStorage.setItem('token', token)
+const getResponseJSON = (response) => {
+  return response.json()
 }
 
 const validateResponseStatus = (response) => {
-  if (response.status < 200 || response.status >= 300) {
-    throw new Error(response.statusText)
+  if (response.error) {
+    const message = API_ERROR_CODES[response.code] || response.error
+    throw new Error(message)
   }
+  return response
+}
+
+const setTokenInLocalStorage = (token) => {
+  localStorage.setItem('token', token)
 }
 
 const newAuthRequest = (apiEndpoint, credentials) => (
@@ -29,30 +35,21 @@ export default (type, params) => {
     if (email && password) { // Standard login
       const request = newAuthRequest('/auth', { email, password })
       return fetch(request)
-      .then(response => {
-        validateResponseStatus(response)
-        return response.json()
-      })
-      .then(({ data: { token } }) => {
-        setTokenInLocalStorage(token)
-      })
+      .then(getResponseJSON)
+      .then(validateResponseStatus)
+      .then(({ data: { token } }) => setTokenInLocalStorage(token))
     } else if (email) { // Passwordless request
       const request = newAuthRequest('/signin', { email, minRole: USER_ROLE_SUPERADMIN })
       return fetch(request)
-      .then(response => {
-        validateResponseStatus(response)
-        return Promise.reject('Email sent!')
-      })
+      .then(getResponseJSON)
+      .then(validateResponseStatus)
+      .then(() => Promise.reject('Email sent!'))
     } else if (token) { // Passwordless confirm
       const request = newAuthRequest('/auth/token', { token })
       return fetch(request)
-      .then(response => {
-        validateResponseStatus(response)
-        return response.json()
-      })
-      .then(({ data: { token } }) => {
-        setTokenInLocalStorage(token)
-      })
+      .then(getResponseJSON)
+      .then(validateResponseStatus)
+      .then(({ data: { token } }) => setTokenInLocalStorage(token))
     }
   }
   if (type === AUTH_LOGOUT) {
