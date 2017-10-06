@@ -1,4 +1,4 @@
-export const USER_ROLE_SUPERADMIN = 'superadmin'
+export const USER_ROLE_SUPERADMIN = 20
 
 export const API_ERROR_CODES = {
   // http
