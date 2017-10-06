@@ -35,7 +35,7 @@ export default (type, params) => {
     const { email, password, token } = params
 
     if (email && password) { // Standard login
-      const request = newAuthRequest('/auth', { email, password })
+      const request = newAuthRequest('/auth', { email, password, minRole: USER_ROLE_SUPERADMIN })
       return fetch(request)
       .then(validateResponse)
       .then(({ data: { token } }) => setTokenInLocalStorage(token))
