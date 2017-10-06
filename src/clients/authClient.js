@@ -1,6 +1,8 @@
 import url from 'url'
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest'
 
+import { USER_ROLE_SUPERADMIN } from '../constants'
+
 const setTokenInLocalStorage = (token) => {
   localStorage.setItem('token', token)
 }
@@ -35,7 +37,7 @@ export default (type, params) => {
         setTokenInLocalStorage(token)
       })
     } else if (email) { // Passwordless request
-      const request = newAuthRequest('/signin', { email })
+      const request = newAuthRequest('/signin', { email, minRole: USER_ROLE_SUPERADMIN })
       return fetch(request)
       .then(response => {
         validateResponseStatus(response)
