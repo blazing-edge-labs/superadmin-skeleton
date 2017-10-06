@@ -3,16 +3,18 @@ import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest'
 
 import { USER_ROLE_SUPERADMIN, API_ERROR_CODES } from '../constants'
 
-const getResponseJSON = (response) => {
-  return response.json()
-}
-
-const validateResponseStatus = (response) => {
-  if (response.error) {
-    const message = API_ERROR_CODES[response.code] || response.error
+const validateResponse = async (response) => {
+  const resBody = await response.json()
+  if (response.status < 200 || response.status >= 300) {
+    let message = ''
+    if (resBody && resBody.error && resBody.code) {
+      message = API_ERROR_CODES[resBody.code] || resBody.error
+    } else {
+      message = response.statusText
+    }
     throw new Error(message)
   }
-  return response
+  return resBody
 }
 
 const setTokenInLocalStorage = (token) => {
@@ -35,20 +37,17 @@ export default (type, params) => {
     if (email && password) { // Standard login
       const request = newAuthRequest('/auth', { email, password })
       return fetch(request)
-      .then(getResponseJSON)
-      .then(validateResponseStatus)
+      .then(validateResponse)
       .then(({ data: { token } }) => setTokenInLocalStorage(token))
     } else if (email) { // Passwordless request
       const request = newAuthRequest('/signin', { email, minRole: USER_ROLE_SUPERADMIN })
       return fetch(request)
-      .then(getResponseJSON)
-      .then(validateResponseStatus)
+      .then(validateResponse)
       .then(() => Promise.reject('Email sent!'))
     } else if (token) { // Passwordless confirm
       const request = newAuthRequest('/auth/token', { token })
       return fetch(request)
-      .then(getResponseJSON)
-      .then(validateResponseStatus)
+      .then(validateResponse)
       .then(({ data: { token } }) => setTokenInLocalStorage(token))
     }
   }
