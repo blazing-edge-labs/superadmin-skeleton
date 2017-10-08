@@ -57,6 +57,13 @@ const renderInput = ({ meta: { touched, error } = {}, input, type = 'text', ...p
     type={type}
   />
 
+const validations = {
+  email: value =>
+    value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value) ? 'Invalid email address' : undefined,
+  required: value =>
+    !value ? 'Required' : undefined,
+}
+
 class PasswordlessLoginPage extends Component {
   constructor (props) {
     super(props)
@@ -107,8 +114,10 @@ class PasswordlessLoginPage extends Component {
                 <div style={styles.input}>
                   <Field
                     name="email"
+                    type="email"
                     component={renderInput}
                     floatingLabelText="Email"
+                    validate={[validations.email, validations.required]}
                   />
                 </div>
               </div>
@@ -166,11 +175,6 @@ function mapStateToProps (state, routerState) {
 const enhance = compose(
   reduxForm({
     form: 'signIn',
-    validate: (values) => {
-      const errors = {}
-      if (!values.email) errors.email = 'Required'
-      return errors
-    },
   }),
   connect(mapStateToProps, { userLogin, showNotification }),
 )
