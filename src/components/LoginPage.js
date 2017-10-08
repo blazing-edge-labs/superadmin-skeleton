@@ -114,7 +114,7 @@ class PasswordlessLoginPage extends Component {
               </div>
               <CardActions>
                 <RaisedButton
-                  type="submit"
+                  type="button"
                   primary
                   disabled={submitting}
                   label="Send magic link"
