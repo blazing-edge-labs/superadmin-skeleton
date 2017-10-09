@@ -15,6 +15,8 @@ import { cyan500, pinkA200 } from 'material-ui/styles/colors'
 
 import { Notification, userLogin, showNotification } from 'admin-on-rest'
 
+import valid from '../utils/validations'
+
 const styles = {
   main: {
     display: 'flex',
@@ -56,13 +58,6 @@ const renderInput = ({ meta: { touched, error } = {}, input, type = 'text', ...p
     {...props}
     type={type}
   />
-
-const validations = {
-  email: value =>
-    value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value) ? 'Invalid email address' : undefined,
-  required: value =>
-    !value ? 'Required' : undefined,
-}
 
 class PasswordlessLoginPage extends Component {
   constructor (props) {
@@ -117,7 +112,7 @@ class PasswordlessLoginPage extends Component {
                     type="email"
                     component={renderInput}
                     floatingLabelText="Email"
-                    validate={[validations.email, validations.required]}
+                    validate={[valid.form.email, valid.form.required]}
                   />
                 </div>
               </div>
