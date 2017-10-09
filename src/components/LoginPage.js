@@ -13,7 +13,7 @@ import TextField from 'material-ui/TextField'
 import LockIcon from 'material-ui/svg-icons/action/lock-outline'
 import { cyan500, pinkA200 } from 'material-ui/styles/colors'
 
-import { Notification, userLogin } from 'admin-on-rest'
+import { Notification, userLogin, showNotification } from 'admin-on-rest'
 
 const styles = {
   main: {
@@ -57,10 +57,44 @@ const renderInput = ({ meta: { touched, error } = {}, input, type = 'text', ...p
     type={type}
   />
 
-class StandardLoginPage extends Component {
-  login = (credentials) => {
-    const { userLogin, location } = this.props
-    userLogin(credentials, location.state ? location.state.nextPathname : '/')
+const validate = {
+  email: value =>
+    value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value) ? 'Invalid email address' : undefined,
+  required: value =>
+    !value ? 'Required' : undefined,
+}
+
+class PasswordlessLoginPage extends Component {
+  constructor (props) {
+    super(props)
+
+    this.confirmTokenAuth = this.confirmTokenAuth.bind(this)
+    this.sendLink = this.sendLink.bind(this)
+    this.login = this.login.bind(this)
+  }
+
+  componentDidMount () {
+    if (this.props.URLQuery) {
+      this.confirmTokenAuth()
+    }
+  }
+
+  confirmTokenAuth () {
+    const token = (new URLSearchParams(this.props.URLQuery)).get('t')
+    if (token) this.props.userLogin({ token })
+  }
+
+  sendLink ({ email }) {
+    if (!email) return showNotification('Email is required')
+    this.props.userLogin({ email })
+  }
+
+  login ({ email, password }) {
+    if (email && password) {
+      this.props.userLogin({ email, password })
+    } else {
+      this.props.showNotification('Both fields are required')
+    }
   }
 
   render () {
@@ -75,15 +109,29 @@ class StandardLoginPage extends Component {
             <div style={styles.avatar}>
               <Avatar backgroundColor={accent1Color} icon={<LockIcon/>} size={60}/>
             </div>
-            <form onSubmit={handleSubmit(this.login)}>
+            <form>
               <div style={styles.form}>
                 <div style={styles.input}>
                   <Field
                     name="email"
+                    type="email"
                     component={renderInput}
                     floatingLabelText="Email"
+                    validate={[validate.email, validate.required]}
                   />
                 </div>
+              </div>
+              <CardActions>
+                <RaisedButton
+                  type="button"
+                  primary
+                  disabled={submitting}
+                  label="Send magic link"
+                  fullWidth
+                  onClick={handleSubmit(this.sendLink)}
+                />
+              </CardActions>
+              <div style={styles.form}>
                 <div style={styles.input}>
                   <Field
                     name="password"
@@ -98,8 +146,9 @@ class StandardLoginPage extends Component {
                   type="submit"
                   primary
                   disabled={submitting}
-                  label="Sign in"
+                  label="Sign in with password"
                   fullWidth
+                  onClick={handleSubmit(this.login)}
                 />
               </CardActions>
             </form>
@@ -111,22 +160,23 @@ class StandardLoginPage extends Component {
   }
 }
 
-StandardLoginPage.propTypes = {
+PasswordlessLoginPage.propTypes = {
   ...propTypes,
   userLogin: PropTypes.func.isRequired,
+  showNotification: PropTypes.func.isRequired,
+}
+
+function mapStateToProps (state, routerState) {
+  return ({
+    URLQuery: routerState.location.search,
+  })
 }
 
 const enhance = compose(
   reduxForm({
     form: 'signIn',
-    validate: (values) => {
-      const errors = {}
-      if (!values.email) errors.email = 'Required'
-      if (!values.password) errors.password = 'Required'
-      return errors
-    },
   }),
-  connect(null, { userLogin }),
+  connect(mapStateToProps, { userLogin, showNotification }),
 )
 
-export default enhance(StandardLoginPage)
+export default enhance(PasswordlessLoginPage)
