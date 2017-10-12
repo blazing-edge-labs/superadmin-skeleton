@@ -13,7 +13,11 @@ import TextField from 'material-ui/TextField'
 import LockIcon from 'material-ui/svg-icons/action/lock-outline'
 import { cyan500, pinkA200 } from 'material-ui/styles/colors'
 
-import { Notification, userLogin, showNotification } from 'admin-on-rest'
+import {
+  Notification,
+  userLogin,
+  showNotification,
+} from 'admin-on-rest'
 
 const styles = {
   main: {
@@ -173,9 +177,7 @@ function mapStateToProps (state, routerState) {
 }
 
 const enhance = compose(
-  reduxForm({
-    form: 'signIn',
-  }),
+  reduxForm({ form: 'signIn' }),
   connect(mapStateToProps, { userLogin, showNotification }),
 )
 
