@@ -1,7 +1,12 @@
 {
   "extends": [
     "standard",
-    "plugin:promise/recommended"
+    "plugin:promise/recommended",
+    "plugin:react/recommended"
+  ],
+  "plugins": [
+    "jest",
+    "react"
   ],
   "rules": {
     "comma-dangle": ["error", "always-multiline"],
@@ -11,5 +16,8 @@
       "SwitchCase": 1
     }],
     "no-else-return": "error"
+  },
+  "env": {
+    "jest/globals": true
   }
 }
