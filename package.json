@@ -19,6 +19,7 @@
     "start": "node server.js",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
+    "coverage": "npm run test -- --coverage",
     "eject": "react-scripts eject",
     "heroku-postbuild": "npm run build"
   },
@@ -38,6 +39,11 @@
   "jest": {
     "snapshotSerializers": [
       "enzyme-to-json/serializer"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/index.js",
+      "!src/registerServiceWorker.js"
     ]
   }
 }
