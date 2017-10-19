@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login renders properly 1`] = `
+<Connect(Form(Connect(Login)))
+  destroyOnUnmount={true}
+  enableReinitialize={false}
+  forceUnregisterOnUnmount={false}
+  form="signIn"
+  getFormState={[Function]}
+  keepDirtyOnReinitialize={false}
+  persistentSubmitErrors={false}
+  pure={true}
+  shouldAsyncValidate={[Function]}
+  shouldValidate={[Function]}
+  touchOnBlur={true}
+  touchOnChange={false}
+/>
+`;
