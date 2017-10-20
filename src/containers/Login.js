@@ -68,7 +68,7 @@ const validate = {
     !value ? 'Required' : undefined,
 }
 
-class Login extends Component {
+export class Login extends Component {
   constructor (props) {
     super(props)
 
@@ -89,7 +89,7 @@ class Login extends Component {
   }
 
   sendLink ({ email }) {
-    if (!email) return showNotification('Email is required')
+    if (!email) return this.props.showNotification('Email is required')
     this.props.userLogin({ email })
   }
 
