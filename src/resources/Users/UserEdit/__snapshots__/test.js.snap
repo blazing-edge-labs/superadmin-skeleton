@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UserEdit renders properly 1`] = `
+<Connect(getContext(Edit))>
+  <Connect(ReduxForm)>
+    <DisabledInput
+      addField={true}
+      source="id"
+    />
+    <TextInput
+      addField={true}
+      label="Email"
+      onBlur={[Function]}
+      onChange={[Function]}
+      onFocus={[Function]}
+      options={Object {}}
+      source="email"
+      type="text"
+      validate={
+        Array [
+          [Function],
+          [Function],
+        ]
+      }
+    />
+    <pure(DateField)
+      addLabel={true}
+      label="Created At"
+      options={
+        Object {
+          "timeZoneName": "short",
+        }
+      }
+      showTime={true}
+      source="createdAt"
+    />
+  </Connect(ReduxForm)>
+</Connect(getContext(Edit))>
+`;

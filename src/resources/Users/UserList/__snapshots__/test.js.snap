@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UserList renders properly 1`] = `
+<Connect(getContext(List))
+  filters={<UserFilter />}
+  perPage={10}
+  sort={
+    Object {
+      "field": "id",
+      "order": "ASC",
+    }
+  }
+>
+  <MuiComponent>
+    <pure(TextField)
+      addLabel={true}
+      source="id"
+    />
+    <pure(EmailField)
+      addLabel={true}
+      source="email"
+    />
+    <pure(DateField)
+      addLabel={true}
+      label="Created At"
+      options={
+        Object {
+          "timeZoneName": "short",
+        }
+      }
+      showTime={true}
+      source="createdAt"
+    />
+    <shouldUpdate(getContext(EditButton)) />
+    <getContext(DeleteButton) />
+  </MuiComponent>
+</Connect(getContext(List))>
+`;
