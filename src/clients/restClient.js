@@ -1,9 +1,11 @@
 import url from 'url'
 import { GET_LIST, GET_ONE, GET_MANY, UPDATE, CREATE, DELETE, fetchUtils } from 'admin-on-rest'
 
-const API_URL = url.resolve(process.env.REACT_APP_API_URL, '/admin')
+import { API_ROUTES } from '../constants'
 
-const convertRESTRequestToHTTP = (type, resource, params) => {
+const API_URL = url.resolve(process.env.REACT_APP_API_URL, API_ROUTES.rest.superadmin)
+
+export const convertRESTRequestToHTTP = (type, resource, params) => {
   let url = ''
   const { queryParameters } = fetchUtils
 
@@ -54,7 +56,7 @@ const convertRESTRequestToHTTP = (type, resource, params) => {
   return { url, options }
 }
 
-const convertHTTPResponseToREST = (response, type, resource, params) => {
+export const convertHTTPResponseToREST = (response, type, resource, params) => {
   const { json: { data } } = response
   switch (type) {
     case GET_LIST:

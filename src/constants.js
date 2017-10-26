@@ -22,6 +22,6 @@ export const API_ROUTES = {
     passwordless_confirm: '/auth/token',
   },
   rest: {
-    // todo: refactor restClient if possible when writing tests for this part
+    superadmin: '/admin',
   },
 }
