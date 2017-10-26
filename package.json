@@ -19,6 +19,7 @@
     "start": "node server.js",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
+    "test-notify": "npm run test -- --notify",
     "coverage": "npm run test -- --coverage --no-cache",
     "eject": "react-scripts eject",
     "heroku-postbuild": "npm run build"

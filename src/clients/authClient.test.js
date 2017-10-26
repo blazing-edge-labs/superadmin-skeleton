@@ -1,6 +1,6 @@
 import url from 'url'
 import fetchMock from 'fetch-mock'
-import { AUTH_LOGIN, AUTH_CHECK } from 'admin-on-rest'
+import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_CHECK } from 'admin-on-rest'
 
 import authClient from './authClient'
 import { USER_ROLE_SUPERADMIN, API_ERROR_CODES, API_ROUTES } from '../constants'
@@ -124,6 +124,20 @@ describe('authClient', async () => {
         await expect(authClient(AUTH_LOGIN, { email: MOCK_EMAIL }))
         .rejects.toHaveProperty('message', mockResponseCustomUnknownError.body.error)
       })
+    })
+  })
+
+  describe('AUTH_LOGOUT', () => {
+    beforeAll(() => {
+      localStorage.setItem('token', MOCK_USER_TOKEN)
+    })
+
+    it('resolves successfully', () => {
+      return expect(authClient(AUTH_LOGOUT)).resolves.toBeUndefined()
+    })
+
+    it('removes  the `token` from localStorage', () => {
+      expect(localStorage.getItem('token')).toBeNull()
     })
   })
 
