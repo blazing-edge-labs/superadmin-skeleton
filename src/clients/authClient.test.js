@@ -1,6 +1,6 @@
 import url from 'url'
 import fetchMock from 'fetch-mock'
-import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_CHECK } from 'admin-on-rest'
+import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest'
 
 import authClient from './authClient'
 import { USER_ROLE_SUPERADMIN, API_ERROR_CODES, API_ROUTES } from '../constants'
@@ -127,17 +127,46 @@ describe('authClient', async () => {
     })
   })
 
-  describe('AUTH_LOGOUT', () => {
+  describe('AUTH_LOGOUT', async () => {
     beforeAll(() => {
       localStorage.setItem('token', MOCK_USER_TOKEN)
     })
 
-    it('resolves successfully', () => {
-      return expect(authClient(AUTH_LOGOUT)).resolves.toBeUndefined()
+    it('resolves successfully', async () => {
+      await expect(authClient(AUTH_LOGOUT)).resolves.toBeUndefined()
     })
 
     it('removes  the `token` from localStorage', () => {
       expect(localStorage.getItem('token')).toBeNull()
+    })
+  })
+
+  describe('AUTH_ERROR', async () => {
+    describe('when request is unauthorized', async () => {
+      beforeEach(() => {
+        localStorage.setItem('token', MOCK_USER_TOKEN)
+      })
+
+      it('removes the `token` on status 401 & rejects the promise with a message from response', async () => {
+        expect(localStorage.getItem('token')).not.toBeNull()
+        await expect(authClient(AUTH_ERROR, { status: 401, statusText: 'Auth failed' }))
+        .rejects.toHaveProperty('message', 'Auth failed')
+        expect(localStorage.getItem('token')).toBeNull()
+      })
+
+      it('removes the `token` on status 403 & rejects the promise with a message from response', async () => {
+        expect(localStorage.getItem('token')).not.toBeNull()
+        await expect(authClient(AUTH_ERROR, { status: 403, statusText: 'Auth failed #2' }))
+        .rejects.toHaveProperty('message', 'Auth failed #2')
+        expect(localStorage.getItem('token')).toBeNull()
+      })
+
+      it('throws an error but keeps the `token` on any other status code', async () => {
+        expect(localStorage.getItem('token')).not.toBeNull()
+        await expect(authClient(AUTH_ERROR, { status: 500, statusText: 'Internal Error' }))
+        .rejects.toHaveProperty('message', 'Internal Error')
+        expect(localStorage.getItem('token')).not.toBeNull()
+      })
     })
   })
 

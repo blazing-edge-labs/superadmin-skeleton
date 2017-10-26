@@ -58,11 +58,11 @@ export default (type, params) => {
     return Promise.resolve()
   }
   if (type === AUTH_ERROR) {
-    const { status } = params
+    const { status, statusText } = params
     if (status === 401 || status === 403) {
       localStorage.removeItem('token')
     }
-    return Promise.reject(new Error(params))
+    return Promise.reject(new Error(statusText))
   }
   if (type === AUTH_CHECK) {
     return localStorage.getItem('token') ? Promise.resolve() : Promise.reject(new Error('No token found'))
