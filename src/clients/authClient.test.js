@@ -8,7 +8,6 @@ import { USER_ROLE_SUPERADMIN, API_ERROR_CODES, API_ROUTES } from '../constants'
 const routes = API_ROUTES.auth
 
 // fetch-mock fix for single-parameter fetch requests
-// fetchMock.setImplementations({ Request: Request }) -- this fix works but it makes lastOptions() return undefined
 const _fetchMock = fetchMock.fetchMock
 fetchMock.fetchMock = (url, options) => {
   if (url instanceof Request && options === undefined) {
@@ -189,6 +188,14 @@ describe('authClient', async () => {
       it('Successfully resolves', async () => {
         await expect(authClient(AUTH_CHECK)).resolves.toBe(undefined)
       })
+    })
+  })
+
+  describe('when action `type` parameter is invalid', async () => {
+    it('rejects the promise with an error', async () => {
+      const myTempAction = 'MY_ACTION'
+      await expect(authClient(myTempAction))
+      .rejects.toHaveProperty('message', `Unsupported auth action type: ${myTempAction}`)
     })
   })
 })
