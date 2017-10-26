@@ -3,7 +3,9 @@ import fetchMock from 'fetch-mock'
 import { AUTH_LOGIN, AUTH_CHECK } from 'admin-on-rest'
 
 import authClient from './authClient'
-import { USER_ROLE_SUPERADMIN, API_ERROR_CODES } from '../constants'
+import { USER_ROLE_SUPERADMIN, API_ERROR_CODES, API_ROUTES } from '../constants'
+
+const routes = API_ROUTES.auth
 
 // fetch-mock fix for single-parameter fetch requests
 // fetchMock.setImplementations({ Request: Request }) -- this fix works but it makes lastOptions() return undefined
@@ -15,6 +17,10 @@ fetchMock.fetchMock = (url, options) => {
   return _fetchMock(url, options)
 }
 
+const getLastCallParams = () => {
+  return JSON.parse(fetchMock.lastOptions()._bodyText)
+}
+
 // route builder
 const getRoute = (endpoint) => url.resolve(process.env.REACT_APP_API_URL, endpoint)
 
@@ -22,6 +28,7 @@ const getRoute = (endpoint) => url.resolve(process.env.REACT_APP_API_URL, endpoi
 const MOCK_EMAIL = 'test@example.com'
 const MOCK_PASSWORD = 'testpassword'
 const MOCK_USER_TOKEN = '000000000000000000000000'
+const MOCK_EMAIL_TOKEN = '111111111111111111111111'
 
 // mock responses
 const mockResponseSuccess = { body: { data: { token: MOCK_USER_TOKEN } } }
@@ -31,32 +38,82 @@ const mockResponseCustomUnknownError = { status: 403, body: { code: 2007, error:
 
 describe('authClient', async () => {
   describe('AUTH_LOGIN', async () => {
-    describe('when receiving email & password as parameters', async () => {
-      fetchMock.postOnce(getRoute('/auth'), mockResponseSuccess)
+    describe('when receiving `email` & `password` as parameters', async () => {
+      beforeAll(() => {
+        fetchMock.postOnce(getRoute(routes.password_login), mockResponseSuccess)
+      })
 
-      it('sets the `token` in localStorage on successful login', async () => {
-        await authClient(AUTH_LOGIN, { email: MOCK_EMAIL, password: MOCK_PASSWORD })
-        expect(localStorage.getItem('token')).toEqual(MOCK_USER_TOKEN)
+      it('resolves successfully', async () => {
+        await expect(authClient(AUTH_LOGIN, { email: MOCK_EMAIL, password: MOCK_PASSWORD }))
+        .resolves.toBeUndefined()
       })
 
       it('sends a `minRole` requirement, along with credentials to the API', () => {
-        const opts = JSON.parse(fetchMock.lastOptions()._bodyInit)
-        expect(opts.minRole).toEqual(USER_ROLE_SUPERADMIN)
-        expect(opts.email).toEqual(MOCK_EMAIL)
-        expect(opts.password).toEqual(MOCK_PASSWORD)
+        const params = getLastCallParams()
+        expect(params.minRole).toEqual(USER_ROLE_SUPERADMIN)
+        expect(params.email).toEqual(MOCK_EMAIL)
+        expect(params.password).toEqual(MOCK_PASSWORD)
+      })
+
+      it('sets the received `token` in localStorage', () => {
+        expect(localStorage.getItem('token')).toEqual(MOCK_USER_TOKEN)
+      })
+    })
+
+    describe('when receiving `email` as the only parameter', async () => {
+      beforeAll(() => {
+        fetchMock.postOnce(getRoute(routes.passwordless_request), mockResponseSuccess)
+      })
+
+      it('rejects the promise (to prevent redirection), with the message "Email sent!"', async () => {
+        await expect(authClient(AUTH_LOGIN, { email: MOCK_EMAIL })).rejects.toBe('Email sent!')
+      })
+
+      it('sends a `minRole` requirement, along with email to the API', () => {
+        const params = getLastCallParams()
+        expect(params.minRole).toEqual(USER_ROLE_SUPERADMIN)
+        expect(params.email).toEqual(MOCK_EMAIL)
+        expect(params.password).toBeUndefined()
+      })
+    })
+
+    describe('when receiving `token` as the only parameter', async () => {
+      beforeAll(() => {
+        fetchMock.postOnce(getRoute(routes.passwordless_confirm), mockResponseSuccess)
+        localStorage.clear()
+      })
+
+      it('resolves successfully', async () => {
+        expect(localStorage.getItem('token')).toBeNull()
+        await expect(authClient(AUTH_LOGIN, { token: MOCK_EMAIL_TOKEN })).resolves.toBeUndefined()
+      })
+
+      it('sends email `token` as the only parameter', () => {
+        const params = getLastCallParams()
+        expect(params.token).toEqual(MOCK_EMAIL_TOKEN)
+        expect(Object.keys(params).length).toEqual(1)
+      })
+
+      it('sets the received `token` in localStorage', () => {
+        expect(localStorage.getItem('token')).toEqual(MOCK_USER_TOKEN)
       })
     })
 
     describe('when the request is rejected with a generic error', async () => {
-      fetchMock.postOnce(getRoute('/signin'), mockResponseInternalError)
+      beforeAll(() => {
+        fetchMock.postOnce(getRoute(routes.passwordless_request), mockResponseInternalError)
+      })
+
       it('throws an error with generic message ', async () => {
         await expect(authClient(AUTH_LOGIN, { email: MOCK_EMAIL })).rejects.toHaveProperty('message')
       })
     })
 
     describe('when the request is rejected with custom error', async () => {
-      fetchMock.postOnce(getRoute('/signin'), mockResponseCustomError)
-      fetchMock.postOnce(getRoute('/signin'), mockResponseCustomUnknownError)
+      beforeAll(() => {
+        fetchMock.postOnce(getRoute(routes.passwordless_request), mockResponseCustomError)
+        fetchMock.postOnce(getRoute(routes.passwordless_request), mockResponseCustomUnknownError)
+      })
 
       it('throws with a message based on error `code`', async () => {
         await expect(authClient(AUTH_LOGIN, { email: MOCK_EMAIL }))

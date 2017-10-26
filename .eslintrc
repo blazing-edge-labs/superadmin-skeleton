@@ -18,6 +18,7 @@
     "no-else-return": "error"
   },
   "env": {
+    "browser": true,
     "jest/globals": true
   }
 }

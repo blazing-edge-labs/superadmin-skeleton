@@ -1,7 +1,9 @@
 import url from 'url'
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest'
 
-import { USER_ROLE_SUPERADMIN, API_ERROR_CODES } from '../constants'
+import { USER_ROLE_SUPERADMIN, API_ERROR_CODES, API_ROUTES } from '../constants'
+
+const routes = API_ROUTES.auth
 
 const validateResponse = async (response) => {
   const resBody = await response.json()
@@ -34,18 +36,18 @@ export default (type, params) => {
   if (type === AUTH_LOGIN) {
     const { email, password, token } = params
 
-    if (email && password) { // Standard login
-      const request = newAuthRequest('/auth', { email, password, minRole: USER_ROLE_SUPERADMIN })
+    if (email && password) { // Password login
+      const request = newAuthRequest(routes.password_login, { email, password, minRole: USER_ROLE_SUPERADMIN })
       return fetch(request)
       .then(validateResponse)
       .then(({ data: { token } }) => setTokenInLocalStorage(token))
     } else if (email) { // Passwordless request
-      const request = newAuthRequest('/signin', { email, minRole: USER_ROLE_SUPERADMIN })
+      const request = newAuthRequest(routes.passwordless_request, { email, minRole: USER_ROLE_SUPERADMIN })
       return fetch(request)
       .then(validateResponse)
-      .then(() => Promise.reject('Email sent!'))
+      .then(() => Promise.reject('Email sent!')) // eslint-disable-line prefer-promise-reject-errors
     } else if (token) { // Passwordless confirm
-      const request = newAuthRequest('/auth/token', { token })
+      const request = newAuthRequest(routes.passwordless_confirm, { token })
       return fetch(request)
       .then(validateResponse)
       .then(({ data: { token } }) => setTokenInLocalStorage(token))
