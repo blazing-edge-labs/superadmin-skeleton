@@ -57,6 +57,7 @@ describe('convertRESTRequestToHTTP', () => {
     })
 
     it('correctly passes parameters to query', () => {
+      expect(Object.keys(query).length).toEqual(4)
       expect(query).toHaveProperty('filter', params.filter)
       expect(query).toHaveProperty('page', params.pagination.page)
       expect(query).toHaveProperty('perPage', params.pagination.perPage)
@@ -65,6 +66,10 @@ describe('convertRESTRequestToHTTP', () => {
 
     it('sets the `method` to `GET`', () => {
       expect(method).toEqual('GET')
+    })
+
+    it('has no body', () => {
+      expect(body).toBeUndefined()
     })
   })
 
@@ -91,6 +96,10 @@ describe('convertRESTRequestToHTTP', () => {
     it('sets the `method` to `GET`', () => {
       expect(method).toEqual('GET')
     })
+
+    it('has no body', () => {
+      expect(body).toBeUndefined()
+    })
   })
 
   describe('when action type is `GET_MANY`', () => {
@@ -116,6 +125,10 @@ describe('convertRESTRequestToHTTP', () => {
 
     it('sets the `method` to `GET`', () => {
       expect(method).toEqual('GET')
+    })
+
+    it('has no body', () => {
+      expect(body).toBeUndefined()
     })
   })
 
@@ -144,8 +157,77 @@ describe('convertRESTRequestToHTTP', () => {
     })
 
     it('correctly sets data in body', () => {
+      expect(Object.keys(body).length).toEqual(2)
       expect(body).toHaveProperty('email', MOCK_USER_EMAIL)
       expect(body).toHaveProperty('name', MOCK_USER_NAME)
+    })
+  })
+
+  describe('when action type is `CREATE`', () => {
+    const params = { data: { email: MOCK_USER_EMAIL, name: MOCK_USER_NAME } }
+
+    beforeAll(() => {
+      ({ url, query, headers, method, body } = getRestToHttpData(CREATE, params))
+    })
+
+    it('sets the correct path name', () => {
+      expect(url.pathname).toEqual(expectedPath)
+    })
+
+    it('correctly sets the `authorization` header from localStorage', () => {
+      const token = headers.get('authorization').split(' ')[1]
+      expect(token).toEqual(MOCK_USER_TOKEN)
+    })
+
+    it('creates no query parameters', () => {
+      expect(Object.keys(query).length).toEqual(0)
+    })
+
+    it('sets the `method` to `POST`', () => {
+      expect(method).toEqual('POST')
+    })
+
+    it('correctly sets data in body', () => {
+      expect(Object.keys(body).length).toEqual(2)
+      expect(body).toHaveProperty('email', MOCK_USER_EMAIL)
+      expect(body).toHaveProperty('name', MOCK_USER_NAME)
+    })
+  })
+
+  describe('when action type is `DELETE`', () => {
+    const params = { id: 19 }
+
+    beforeAll(() => {
+      ({ url, query, headers, method, body } = getRestToHttpData(DELETE, params))
+    })
+
+    it('sets the correct path name, including the resource ID', () => {
+      expect(url.pathname).toEqual(`${expectedPath}/${params.id}`)
+    })
+
+    it('correctly sets the `authorization` header from localStorage', () => {
+      const token = headers.get('authorization').split(' ')[1]
+      expect(token).toEqual(MOCK_USER_TOKEN)
+    })
+
+    it('creates no query parameters', () => {
+      expect(Object.keys(query).length).toEqual(0)
+    })
+
+    it('sets the `method` to `DELETE`', () => {
+      expect(method).toEqual('DELETE')
+    })
+
+    it('has no body', () => {
+      expect(body).toBeUndefined()
+    })
+  })
+
+  describe('when action type is invalid', () => {
+    const type = 'MY_CUSTOM_ACTION'
+
+    it('throws an error', () => {
+      expect(() => convertRESTRequestToHTTP(type, resource, {})).toThrow(`Unsupported fetch action type: ${type}`)
     })
   })
 })
