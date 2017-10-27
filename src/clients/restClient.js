@@ -29,12 +29,15 @@ export const convertRESTRequestToHTTP = (type, resource, params) => {
         filter: JSON.stringify(params.filter),
       }
       url = `${API_URL}/${resource}?${queryParameters(query)}`
+      options.method = 'GET'
       break
     case GET_ONE:
       url = `${API_URL}/${resource}/${params.id}`
+      options.method = 'GET'
       break
     case GET_MANY:
       url = `${API_URL}/${resource}/many?${queryParameters({ ids: JSON.stringify(params.ids) })}`
+      options.method = 'GET'
       break
     case UPDATE:
       url = `${API_URL}/${resource}/${params.id}`
