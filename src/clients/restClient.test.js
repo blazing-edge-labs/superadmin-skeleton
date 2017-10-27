@@ -16,6 +16,8 @@ const parseQuery = (query) => {
 }
 
 const resource = 'user'
+const MOCK_USER_EMAIL = 'user@example.com'
+const MOCK_USER_NAME = 'Example User'
 const MOCK_USER_TOKEN = '000000000000000000000000'
 
 const expectedPath = `${API_ROUTES.rest.superadmin}/${resource}`
@@ -24,12 +26,15 @@ const getRestToHttpData = (type, params) => {
   const { url: urlString, options } = convertRESTRequestToHTTP(type, resource, params)
   const url = parseUrl(urlString)
   const query = parseQuery(url.query)
-  const { headers, method } = options
-  return { url, query, headers, method }
+  const { headers, method, body: bodyJson } = options
+
+  const body = bodyJson ? JSON.parse(bodyJson) : undefined
+
+  return { url, query, headers, method, body }
 }
 
 describe('convertRESTRequestToHTTP', () => {
-  let url, query, headers, method
+  let url, query, headers, method, body
 
   beforeAll(() => {
     localStorage.setItem('token', MOCK_USER_TOKEN)
@@ -51,12 +56,11 @@ describe('convertRESTRequestToHTTP', () => {
       expect(token).toEqual(MOCK_USER_TOKEN)
     })
 
-    it('correctly formats the query parameters', () => {
-      expect(query.filter).toEqual({})
-      expect(query.page).toEqual(1)
-      expect(query.perPage).toEqual(10)
-      expect(query.sort[0]).toEqual('id')
-      expect(query.sort[1]).toEqual('ASC')
+    it('correctly passes parameters to query', () => {
+      expect(query).toHaveProperty('filter', params.filter)
+      expect(query).toHaveProperty('page', params.pagination.page)
+      expect(query).toHaveProperty('perPage', params.pagination.perPage)
+      expect(query).toHaveProperty('sort', [params.sort.field, params.sort.order])
     })
 
     it('sets the `method` to `GET`', () => {
@@ -81,11 +85,67 @@ describe('convertRESTRequestToHTTP', () => {
     })
 
     it('creates no query parameters', () => {
-      expect(query).toEqual({})
+      expect(Object.keys(query).length).toEqual(0)
     })
 
     it('sets the `method` to `GET`', () => {
       expect(method).toEqual('GET')
+    })
+  })
+
+  describe('when action type is `GET_MANY`', () => {
+    const params = { ids: [1, 5, 22] }
+
+    beforeAll(() => {
+      ({ url, query, headers, method } = getRestToHttpData(GET_MANY, params))
+    })
+
+    it('sets the correct path name', () => {
+      expect(url.pathname).toEqual(`${expectedPath}/many`)
+    })
+
+    it('correctly sets the `authorization` header from localStorage', () => {
+      const token = headers.get('authorization').split(' ')[1]
+      expect(token).toEqual(MOCK_USER_TOKEN)
+    })
+
+    it('builds a query with `ids` as the only parameter', () => {
+      expect(Object.keys(query).length).toEqual(1)
+      expect(query).toHaveProperty('ids', params.ids)
+    })
+
+    it('sets the `method` to `GET`', () => {
+      expect(method).toEqual('GET')
+    })
+  })
+
+  describe('when action type is `UPDATE`', () => {
+    const params = { id: 3, data: { email: MOCK_USER_EMAIL, name: MOCK_USER_NAME } }
+
+    beforeAll(() => {
+      ({ url, query, headers, method, body } = getRestToHttpData(UPDATE, params))
+    })
+
+    it('sets the correct path name, including the resource ID', () => {
+      expect(url.pathname).toEqual(`${expectedPath}/${params.id}`)
+    })
+
+    it('correctly sets the `authorization` header from localStorage', () => {
+      const token = headers.get('authorization').split(' ')[1]
+      expect(token).toEqual(MOCK_USER_TOKEN)
+    })
+
+    it('creates no query parameters', () => {
+      expect(Object.keys(query).length).toEqual(0)
+    })
+
+    it('sets the `method` to `PUT`', () => {
+      expect(method).toEqual('PUT')
+    })
+
+    it('correctly sets data in body', () => {
+      expect(body).toHaveProperty('email', MOCK_USER_EMAIL)
+      expect(body).toHaveProperty('name', MOCK_USER_NAME)
     })
   })
 })
