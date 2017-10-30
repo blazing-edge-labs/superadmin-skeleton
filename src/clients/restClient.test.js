@@ -233,6 +233,62 @@ describe('convertRESTRequestToHTTP', () => {
 })
 
 describe('convertHTTPResponseToREST', () => {
+  // restClient uses `fetchJson`, and the response will contain a `json` key with parsed `body` inside
+  describe('when action type is `GET_LIST`', () => {
+    let result
+
+    const userList = [
+      { id: 1, email: 'user1@example.com' },
+      { id: 2, email: 'user2@example.com' },
+      { id: 3, email: 'user3@example.com' },
+    ]
+    const response = {
+      status: 200,
+      json: {
+        data: {
+          count: 3,
+          items: userList,
+        },
+      },
+    }
+
+    beforeAll(() => {
+      result = convertHTTPResponseToREST(response, GET_LIST)
+    })
+
+    it('returns exactly 2 properties', () => {
+      expect(Object.keys(result).length).toEqual(2)
+    })
+
+    it('correctly parses `data` from the response', () => {
+      expect(result).toHaveProperty('data', userList)
+      expect(result).toHaveProperty('total', userList.length)
+    })
+  })
+
+  describe('when action type is any other than `GET_LIST`', () => {
+    let result
+
+    const userObj = { id: 1, email: 'user1@example.com' }
+    const response = {
+      status: 200,
+      json: {
+        data: userObj,
+      },
+    }
+
+    beforeAll(() => {
+      result = convertHTTPResponseToREST(response, GET_ONE)
+    })
+
+    it('returns exactly 1 property', () => {
+      expect(Object.keys(result).length).toEqual(1)
+    })
+
+    it('correctly parses `data` from the response', () => {
+      expect(result).toHaveProperty('data', userObj)
+    })
+  })
 })
 
 describe('restClient', async () => {
