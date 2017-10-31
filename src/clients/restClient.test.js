@@ -1,9 +1,13 @@
 import _url from 'url'
 import queryString from 'query-string'
+import fetchMock from 'fetch-mock'
 import { GET_LIST, GET_ONE, GET_MANY, UPDATE, CREATE, DELETE } from 'admin-on-rest'
 
 import restClient, { convertRESTRequestToHTTP, convertHTTPResponseToREST } from './restClient'
 import { API_ROUTES } from '../constants'
+
+// route builder
+const getRoute = (endpoint) => _url.resolve(process.env.REACT_APP_API_URL, endpoint)
 
 // --------------------------
 const parseUrl = (url) => _url.parse(url)
@@ -21,6 +25,13 @@ const MOCK_USER_NAME = 'Example User'
 const MOCK_USER_TOKEN = '000000000000000000000000'
 
 const expectedPath = `${API_ROUTES.rest.superadmin}/${resource}`
+
+const mockUserObj = { id: 1, email: 'user1@example.com' }
+const mockUserList = [
+  { id: 1, email: 'user1@example.com' },
+  { id: 2, email: 'user2@example.com' },
+  { id: 3, email: 'user3@example.com' },
+]
 
 const getRestToHttpData = (type, params) => {
   const { url: urlString, options } = convertRESTRequestToHTTP(type, resource, params)
@@ -237,17 +248,12 @@ describe('convertHTTPResponseToREST', () => {
   describe('when action type is `GET_LIST`', () => {
     let result
 
-    const userList = [
-      { id: 1, email: 'user1@example.com' },
-      { id: 2, email: 'user2@example.com' },
-      { id: 3, email: 'user3@example.com' },
-    ]
     const response = {
       status: 200,
       json: {
         data: {
           count: 3,
-          items: userList,
+          items: mockUserList,
         },
       },
     }
@@ -261,19 +267,18 @@ describe('convertHTTPResponseToREST', () => {
     })
 
     it('correctly parses `data` from the response', () => {
-      expect(result).toHaveProperty('data', userList)
-      expect(result).toHaveProperty('total', userList.length)
+      expect(result).toHaveProperty('data', mockUserList)
+      expect(result).toHaveProperty('total', mockUserList.length)
     })
   })
 
   describe('when action type is any other than `GET_LIST`', () => {
     let result
 
-    const userObj = { id: 1, email: 'user1@example.com' }
     const response = {
       status: 200,
       json: {
-        data: userObj,
+        data: mockUserObj,
       },
     }
 
@@ -286,10 +291,41 @@ describe('convertHTTPResponseToREST', () => {
     })
 
     it('correctly parses `data` from the response', () => {
-      expect(result).toHaveProperty('data', userObj)
+      expect(result).toHaveProperty('data', mockUserObj)
     })
   })
 })
 
 describe('restClient', async () => {
+  let result
+
+  beforeAll(() => {
+    localStorage.setItem('token', MOCK_USER_TOKEN)
+  })
+
+  const mockResponseGetOne = {
+    status: 200,
+    body: {
+      data: mockUserObj,
+    },
+  }
+
+  describe('when fetching data from API', async () => {
+    const params = { id: 1 }
+    const fullExpectedPath = getRoute(`${expectedPath}/${params.id}`)
+
+    beforeAll(async () => {
+      fetchMock.getOnce(fullExpectedPath, mockResponseGetOne)
+      result = await restClient(GET_ONE, 'user', params)
+    })
+
+    it('sent all the expected requests to the API (REST-to-HTTP)', () => {
+      expect(fetchMock.done(fullExpectedPath)).toBe(true)
+    })
+
+    it('correctly parses JSON data from body (HTTP-to-REST)', () => {
+      expect(Object.keys(result).length).toEqual(1)
+      expect(result).toHaveProperty('data', mockResponseGetOne.body.data)
+    })
+  })
 })
