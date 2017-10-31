@@ -68,7 +68,7 @@ const validate = {
     !value ? 'Required' : undefined,
 }
 
-class PasswordlessLoginPage extends Component {
+export class Login extends Component {
   constructor (props) {
     super(props)
 
@@ -89,7 +89,7 @@ class PasswordlessLoginPage extends Component {
   }
 
   sendLink ({ email }) {
-    if (!email) return showNotification('Email is required')
+    if (!email) return this.props.showNotification('Email is required')
     this.props.userLogin({ email })
   }
 
@@ -164,7 +164,7 @@ class PasswordlessLoginPage extends Component {
   }
 }
 
-PasswordlessLoginPage.propTypes = {
+Login.propTypes = {
   ...propTypes,
   userLogin: PropTypes.func.isRequired,
   showNotification: PropTypes.func.isRequired,
@@ -181,4 +181,4 @@ const enhance = compose(
   connect(mapStateToProps, { userLogin, showNotification }),
 )
 
-export default enhance(PasswordlessLoginPage)
+export default enhance(Login)

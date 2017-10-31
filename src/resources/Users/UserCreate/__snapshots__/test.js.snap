@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UserCreate renders properly 1`] = `
+<Connect(getContext(Create))>
+  <Connect(ReduxForm)>
+    <TextInput
+      addField={true}
+      onBlur={[Function]}
+      onChange={[Function]}
+      onFocus={[Function]}
+      options={Object {}}
+      source="email"
+      type="email"
+    />
+    <TextInput
+      addField={true}
+      default=""
+      onBlur={[Function]}
+      onChange={[Function]}
+      onFocus={[Function]}
+      options={Object {}}
+      source="password"
+      type="password"
+    />
+  </Connect(ReduxForm)>
+</Connect(getContext(Create))>
+`;

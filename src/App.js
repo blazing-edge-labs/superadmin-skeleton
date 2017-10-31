@@ -10,9 +10,9 @@ import LoginPage from './containers/Login'
 import authClient from './clients/authClient'
 import restClient from './clients/restClient'
 
-import UserList from './components/Users/UserList'
-import UserEdit from './components/Users/UserEdit'
-import UserCreate from './components/Users/UserCreate'
+import UserList from './resources/Users/UserList'
+import UserEdit from './resources/Users/UserEdit'
+import UserCreate from './resources/Users/UserCreate'
 
 const history = createHistory()
 

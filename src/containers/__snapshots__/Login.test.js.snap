@@ -1,0 +1,119 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login rendering renders properly 1`] = `
+<div
+  style={
+    Object {
+      "alignItems": "center",
+      "backgroundColor": "#00bcd4",
+      "display": "flex",
+      "flexDirection": "column",
+      "justifyContent": "center",
+      "minHeight": "100vh",
+    }
+  }
+>
+  <Card
+    expandable={false}
+    expanded={null}
+    initiallyExpanded={false}
+    style={
+      Object {
+        "minWidth": 300,
+      }
+    }
+  >
+    <div
+      style={
+        Object {
+          "margin": "1em",
+          "textAlign": "center ",
+        }
+      }
+    >
+      <Avatar
+        backgroundColor="#ff4081"
+        icon={<ActionLockOutline />}
+        size={60}
+      />
+    </div>
+    <form>
+      <div
+        style={
+          Object {
+            "padding": "0 1em 1em 1em",
+          }
+        }
+      >
+        <div
+          style={
+            Object {
+              "display": "flex",
+            }
+          }
+        >
+          <Field
+            component={[Function]}
+            floatingLabelText="Email"
+            name="email"
+            type="email"
+            validate={
+              Array [
+                [Function],
+                [Function],
+              ]
+            }
+          />
+        </div>
+      </div>
+      <CardActions>
+        <RaisedButton
+          disabled={false}
+          fullWidth={true}
+          label="Send magic link"
+          labelPosition="after"
+          onClick={[Function]}
+          primary={true}
+          secondary={false}
+          type="button"
+        />
+      </CardActions>
+      <div
+        style={
+          Object {
+            "padding": "0 1em 1em 1em",
+          }
+        }
+      >
+        <div
+          style={
+            Object {
+              "display": "flex",
+            }
+          }
+        >
+          <Field
+            component={[Function]}
+            floatingLabelText="Password"
+            name="password"
+            type="password"
+          />
+        </div>
+      </div>
+      <CardActions>
+        <RaisedButton
+          disabled={false}
+          fullWidth={true}
+          label="Sign in with password"
+          labelPosition="after"
+          onClick={[Function]}
+          primary={true}
+          secondary={false}
+          type="submit"
+        />
+      </CardActions>
+    </form>
+  </Card>
+  <getContext(Connect(Notification)) />
+</div>
+`;

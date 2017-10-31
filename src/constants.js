@@ -14,3 +14,14 @@ export const API_ERROR_CODES = {
   // role
   4002: 'Your need more power!',
 }
+
+export const API_ROUTES = {
+  auth: {
+    password_login: '/auth',
+    passwordless_request: '/signin',
+    passwordless_confirm: '/auth/token',
+  },
+  rest: {
+    superadmin: '/admin',
+  },
+}

@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`App renders properly 1`] = `
+<Admin
+  authClient={[Function]}
+  history={
+    Object {
+      "action": "POP",
+      "block": [Function],
+      "createHref": [Function],
+      "go": [Function],
+      "goBack": [Function],
+      "goForward": [Function],
+      "length": 1,
+      "listen": [Function],
+      "location": Object {
+        "hash": "",
+        "pathname": "/",
+        "search": "",
+        "state": undefined,
+      },
+      "push": [Function],
+      "replace": [Function],
+    }
+  }
+  loginPage={[Function]}
+  restClient={[Function]}
+>
+  <Resource
+    create={[Function]}
+    edit={[Function]}
+    icon={[Function]}
+    list={[Function]}
+    name="user"
+    options={Object {}}
+    remove={[Function]}
+  />
+</Admin>
+`;
